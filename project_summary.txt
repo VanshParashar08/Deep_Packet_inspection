@@ -1,0 +1,12 @@
+Deep Packet Engine (DPI) - Project Summary
+
+What this project does:
+This project is a Deep Packet Inspection (DPI) system. It acts as an advanced network traffic filter and analyzer. Unlike simple firewalls that only look at source and destination IPs, this engine looks inside the packet payload (layer 7) to identify specific applications (like YouTube, Facebook, or Instagram) even when the traffic is encrypted with HTTPS. It allows users to upload network captures (PCAP files), analyze the traffic to classify applications, enforce blocking rules based on domains, IPs, or app names, and outputs a filtered PCAP file along with a detailed statistical report.
+
+How it works:
+1. Packet Ingestion: The system reads raw network traffic from PCAP files using a custom C++ parser.
+2. Flow Tracking: It organizes packets into "flows" or connections based on the 5-tuple (Source IP, Destination IP, Source Port, Destination Port, Protocol).
+3. Payload Inspection: For TLS/HTTPS traffic, the engine inspects the initial handshake packets (Client Hello) to extract the Server Name Indication (SNI). This reveals the requested domain in plaintext before encryption begins.
+4. Classification & Filtering: Extracted domains are matched against a database of known app signatures and user-defined blocking rules. If a match is found that violates a rule, the entire flow is marked as dropped.
+5. Multi-threading: The system includes a multi-threaded version (dpi_mt.cpp) that uses a load balancer to distribute flows across multiple Fast Path workers, ensuring high-performance processing.
+6. Reporting: The backend (Node.js/Express) communicates with the C++ engine to generate a comprehensive JSON report containing packet statistics and an app breakdown, which is then visualized on the React/Vite frontend dashboard.

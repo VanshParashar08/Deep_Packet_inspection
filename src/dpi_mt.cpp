@@ -15,6 +15,7 @@
 #include <chrono>
 #include <iomanip>
 #include <algorithm>
+#include <cctype>
 #include <optional>
 
 #include "pcap_reader.h"
@@ -117,10 +118,17 @@ public:
     
     void blockApp(const std::string& app) {
         std::lock_guard<std::mutex> lock(mutex_);
+        std::string lower_app = app;
+        std::transform(lower_app.begin(), lower_app.end(), lower_app.begin(), [](unsigned char c){ return std::tolower(c); });
+        
         for (int i = 0; i < static_cast<int>(AppType::APP_COUNT); i++) {
-            if (appTypeToString(static_cast<AppType>(i)) == app) {
+            std::string app_str = appTypeToString(static_cast<AppType>(i));
+            std::string lower_app_str = app_str;
+            std::transform(lower_app_str.begin(), lower_app_str.end(), lower_app_str.begin(), [](unsigned char c){ return std::tolower(c); });
+            
+            if (lower_app_str == lower_app) {
                 blocked_apps_.insert(static_cast<AppType>(i));
-                std::cout << "[Rules] Blocked app: " << app << "\n";
+                std::cout << "[Rules] Blocked app: " << app_str << "\n";
                 return;
             }
         }

@@ -1,0 +1,14 @@
+# Build artifacts
+dpi_engine
+dpi_simple
+*.o
+
+# Data
+*.pcap
+
+# Node
+node_modules/
+.env
+
+# OS
+.DS_Store
